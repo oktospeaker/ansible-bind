@@ -1,4 +1,16 @@
 ---
+- name: "{{ bind_service_name }} working dir creation"
+  become: true
+  file:
+    path: /var/docker/bind
+    state: directory
+  notify: Update SELinux security context
+
+- name: Update SELinux security context
+  become: true
+  shell: chcon -Rt svirt_sandbox_file_t /var/docker/bind
+  notify: "{{ bind_service_name }} restart"
+
 - name: "{{ bind_service_name }} restart"
   become: true
   shell: systemctl daemon-reload

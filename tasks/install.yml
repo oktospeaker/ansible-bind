@@ -5,14 +5,4 @@
     src: systemd/bind.service.j2
     dest: "/etc/systemd/system/{{ bind_service_name }}.service"
     backup: yes
-
-- name: Make BIND directory on host
-  become: true
-  file:
-    path: /var/docker/bind
-    state: directory
-
-- name: Update SELinux security context
-  become: true
-  shell: chcon -Rt svirt_sandbox_file_t /var/docker/bind
-  notify: "{{ bind_service_name }} restart"
+  notify: "{{ bind_service_name }} working dir creation"
