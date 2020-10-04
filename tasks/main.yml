@@ -1,10 +1,10 @@
 ---
-- name: "Installation {{ tftp_service_name }}"
+- name: "Installation {{ bind_service_name }}"
   become: yes
   become_user: root
   include: install.yml
 
-- name: "Unistallation {{ tftp_service_name }}"
+- name: "Unistallation {{ bind_service_name }}"
   become: yes
   become_user: root
   include: uninstall.yml

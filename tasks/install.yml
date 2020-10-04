@@ -8,7 +8,9 @@
 
 - name: Make BIND directory on host
   become: true
-  shell: mkdir -p /var/docker/bind
+  file:
+    path: /var/docker/bind
+    state: directory
 
 - name: Update SELinux security context
   become: true

@@ -11,7 +11,7 @@ ExecStart=/usr/bin/docker run \
         -p {{ bind_host_port }}:{{ bind_container_port }}/{{ bind_port_type }} \
         -p {{ bind_web_host_port }}:{{ bind_web_container_port }}/{{ bind_web_port_type }} \
         -e ROOT_PASSWORD={{ BIND_ROOT_PASSWORD }} \
-        -v {{ host_dir }}:{{ container_dir }}
+        -v {{ host_dir }}:{{ container_dir }} \
         --name {{ bind_service_name }} \
         {{ docker_image }}
 ExecStop=/usr/bin/docker stop -t 1 {{ bind_service_name }}
