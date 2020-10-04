@@ -1,0 +1,12 @@
+---
+bind_service_name: bind-docker
+uninstall_service: false
+bind_host_port: 53
+bind_container_port: 53
+bind_port_type: udp
+bind_web_host_port: 10000
+bind_web_container_port: 10000
+bind_web_port_type: tcp
+host_dir: /var/docker/bind
+container_dir: /data
+docker_image: sameersbn/bind

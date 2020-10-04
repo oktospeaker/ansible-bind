@@ -1,0 +1,47 @@
+---
+- name: "{{ bind_service_name }} restart"
+  become: true
+  shell: systemctl daemon-reload
+  notify: "{{ bind_service_name }} restart service"
+
+- name: "{{ bind_service_name }} restart service"
+  become: true
+  service:
+    name: "{{ bind_service_name }}"
+    state: restarted
+    enabled: yes
+  notify: firewall-cmd add-port 1
+
+- name: firewall-cmd add-port 1
+  become: true
+  shell: firewall-cmd --zone=public --permanent --add-port={{ bind_host_port }}/{{ bind_port_type }}
+  notify: firewall-cmd add-port 2
+
+- name: firewall-cmd add-port 2
+  become: true
+  shell: firewall-cmd --zone=public --permanent --add-port={{ bind_web_host_port }}/{{ bind_web_port_type }}
+  notify: service firewalld reload 
+
+- name: "{{ bind_service_name }} restart uninstall"
+  become: true
+  shell: systemctl daemon-reload
+  notify: reset-failed
+
+- name: reset-failed
+  become: true
+  shell: systemctl reset-failed
+  notify: firewall-cmd remove-port 1
+
+- name: firewall-cmd remove-port 1
+  become: true
+  shell: firewall-cmd --zone=public --permanent --remove-port={{ bind_host_port }}/{{ bind_port_type }}
+  notify: firewall-cmd remove-port 2
+
+- name: firewall-cmd remove-port 2
+  become: true
+  shell: firewall-cmd --zone=public --permanent --remove-port={{ bind_web_host_port }}/{{ bind_web_port_type }}
+  notify: service firewalld reload
+
+- name: service firewalld reload
+  become: true
+  shell: systemctl restart firewalld

@@ -1,0 +1,20 @@
+[Unit]
+Description=BIND-server docker container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker rm {{ bind_service_name }}
+ExecStart=/usr/bin/docker run \
+        --rm \
+        -p {{ bind_host_port }}:{{ bind_container_port }}/{{ bind_port_type }} \
+        -p {{ bind_web_host_port }}:{{ bind_web_container_port }}/{{ bind_web_port_type }} \
+        -e ROOT_PASSWORD={{ BIND_ROOT_PASSWORD }} \
+        -v {{ host_dir }}:{{ container_dir }}
+        --name {{ bind_service_name }} \
+        {{ docker_image }}
+ExecStop=/usr/bin/docker stop -t 1 {{ bind_service_name }}
+
+[Install]
+WantedBy=multi-user.target
