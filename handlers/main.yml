@@ -4,9 +4,9 @@
   file:
     path: /var/docker/bind
     state: directory
-  notify: Update SELinux security context
+  notify: "{{ bind_service_name }}: Update SELinux security context"
 
-- name: Update SELinux security context
+- name: "{{ bind_service_name }}: Update SELinux security context"
   become: true
   shell: chcon -Rt svirt_sandbox_file_t /var/docker/bind
   notify: "{{ bind_service_name }} restart"
@@ -22,38 +22,38 @@
     name: "{{ bind_service_name }}"
     state: restarted
     enabled: yes
-  notify: firewall-cmd add-port 1
+  notify: "{{ bind_service_name }}: firewall-cmd add-port 1"
 
-- name: firewall-cmd add-port 1
+- name: "{{ bind_service_name }}: firewall-cmd add-port 1"
   become: true
   shell: firewall-cmd --zone=public --permanent --add-port={{ bind_host_port }}/{{ bind_port_type }}
-  notify: firewall-cmd add-port 2
+  notify: "{{ bind_service_name }}: firewall-cmd add-port 2"
 
-- name: firewall-cmd add-port 2
+- name: "{{ bind_service_name }}: firewall-cmd add-port 2"
   become: true
   shell: firewall-cmd --zone=public --permanent --add-port={{ bind_web_host_port }}/{{ bind_web_port_type }}
-  notify: service firewalld reload 
+  notify: "{{ bind_service_name }}: service firewalld reload"
 
 - name: "{{ bind_service_name }} restart uninstall"
   become: true
   shell: systemctl daemon-reload
-  notify: reset-failed
+  notify: "{{ bind_service_name }}: reset-failed"
 
-- name: reset-failed
+- name: "{{ bind_service_name }}: reset-failed"
   become: true
   shell: systemctl reset-failed
-  notify: firewall-cmd remove-port 1
+  notify: "{{ bind_service_name }}: firewall-cmd remove-port 1"
 
-- name: firewall-cmd remove-port 1
+- name: "{{ bind_service_name }}: firewall-cmd remove-port 1"
   become: true
   shell: firewall-cmd --zone=public --permanent --remove-port={{ bind_host_port }}/{{ bind_port_type }}
-  notify: firewall-cmd remove-port 2
+  notify: "{{ bind_service_name }}: firewall-cmd remove-port 2"
 
-- name: firewall-cmd remove-port 2
+- name: "{{ bind_service_name }}: firewall-cmd remove-port 2"
   become: true
   shell: firewall-cmd --zone=public --permanent --remove-port={{ bind_web_host_port }}/{{ bind_web_port_type }}
-  notify: service firewalld reload
+  notify: "{{ bind_service_name }}: service firewalld reload"
 
-- name: service firewalld reload
+- name: "{{ bind_service_name }}: service firewalld reload"
   become: true
   shell: systemctl restart firewalld
